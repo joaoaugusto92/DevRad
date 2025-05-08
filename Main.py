@@ -15,10 +15,12 @@ class QuizApp(tk.Tk):
 
         # cria o Style uma única vez, usando o tema do config
         self.style = Style(config.BOOTSTRAP_THEME)
-        container = tk.Frame(self)
+
+        container = tk.Frame(self) 
+        
         container.pack(fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1) 
 
         self.frames = {}
         for F in (InitialScreen, MovieSearchScreen, QuizSettingsScreen, QuizStartScreen, QuizScreen):
