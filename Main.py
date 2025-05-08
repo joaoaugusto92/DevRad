@@ -17,7 +17,6 @@ class QuizApp(tk.Tk):
         self.style = Style(config.BOOTSTRAP_THEME)
 
         container = tk.Frame(self) 
-        
         container.pack(fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1) 
