@@ -7,6 +7,7 @@ from screens.quiz_settings_screen import QuizSettingsScreen
 from screens.quiz_start_screen import QuizStartScreen
 from screens.quiz_screen import QuizScreen
 
+
 class QuizApp(tk.Tk):
     def __init__(self):
         super().__init__()
