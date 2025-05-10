@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import config
+import pandas as pd
 from config import PREVIOUS_THEME
 
 
@@ -204,7 +205,7 @@ class QuizStartScreen(ttk.Frame):
         self.theme_var = tk.StringVar(value=config.BOOTSTRAP_THEME)
         self.previous_theme = config.BOOTSTRAP_THEME
 
-        # seleção de tema
+        # seleção de Gêneros
         ttk.Label(self, text="Gêneros").pack(pady=(20, 5))
         theme_combobox = ttk.Combobox(self, values=GENRES, textvariable=self.theme_var, state="readonly")
         theme_combobox.pack()
@@ -222,3 +223,27 @@ class QuizStartScreen(ttk.Frame):
         quiz_screen = self.controller.frames["QuizScreen"]
         quiz_screen.start_quiz()  # inicializa o quiz (perguntas, timer, etc)
         self.controller.show_frame("QuizScreen")  # exibe a tela do quiz
+
+    def handle_genre_selection(self, event):
+        selected_genre = self.selected_genre.get()
+        print(f"Gênero selecionado: {selected_genre}")
+        self.search_movies_by_genre(selected_genre)
+
+    def search_movies_by_genre(self, genre):
+        try:
+            # Carregando o dataset 
+            movies_df = pd.read_csv("DataSet/world_imdb_movies_top_movies_per_year.csv")
+    
+            # Filtra os filmes pelo gênero selecionado
+            filtered_movies = movies_df[movies_df['genre'].str.contains(genre, na=False, case=False)]
+    
+            if not filtered_movies.empty:
+                print(f"Filmes encontrados para o gênero '{genre}':")
+                print(filtered_movies[['title', 'genre']])  # Exibe título e gênero os filmes encontrados  
+                return filtered_movies
+            else:
+                print(f"Nenhum filme encontrado para o gênero '{genre}'.")
+        except FileNotFoundError:
+                print("Erro: O arquivo do dataset não foi encontrado.")
+        except Exception as e:
+                print(f"Ocorreu um erro ao buscar filmes: {e}")
