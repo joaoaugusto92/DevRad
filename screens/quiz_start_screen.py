@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import config
 import pandas as pd
-from config import PREVIOUS_THEME
 
 
 GENRES = ['Erotic Thriller'
@@ -202,14 +200,13 @@ class QuizStartScreen(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.theme_var = tk.StringVar(value=config.BOOTSTRAP_THEME)
-        self.previous_theme = config.BOOTSTRAP_THEME
+        self.genre_var = tk.StringVar()
 
         # Seleção de Gêneros
         ttk.Label(self, text="Gêneros").pack(pady=(20, 5))
-        theme_combobox = ttk.Combobox(self, values=GENRES, textvariable=self.theme_var, state="readonly")
-        theme_combobox.pack()
-        theme_combobox.bind("<<ComboboxSelected>>", self.handle_genre_selection)
+        genre_combobox = ttk.Combobox(self, values=GENRES, textvariable=self.genre_var, state="readonly")
+        genre_combobox.pack()
+        genre_combobox.bind("<<ComboboxSelected>>", self.handle_genre_selection)
 
         # Seleção de Décadas
         ttk.Label(self, text="Décadas").pack(pady=(20, 5))
@@ -233,7 +230,7 @@ class QuizStartScreen(ttk.Frame):
         self.controller.show_frame("QuizScreen")  # exibe a tela do quiz
 
     def handle_genre_selection(self, event):
-        selected_genre = self.theme_var.get()
+        selected_genre = self.genre_var.get()
         print(f"Gênero selecionado: {selected_genre}")
         filtered_movies = self.search_movies_by_genre(selected_genre)
         if filtered_movies is not None:
