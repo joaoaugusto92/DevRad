@@ -215,7 +215,7 @@ class QuizStartScreen(ttk.Frame):
         # Seleção de Décadas
         ttk.Label(combobox_frame, text="Décadas").grid(row=0, column=1, padx=5)
         self.decade_var = tk.StringVar()
-        decades = [str(year) for year in range(1900, 2030, 10)]  # Gera décadas de 1900 a 2020
+        decades = [str(year) for year in range(1960, 2024, 10)]  # Gera décadas de 1900 a 2020
         decade_combobox = ttk.Combobox(combobox_frame, values=decades, textvariable=self.decade_var, state="readonly")
         decade_combobox.grid(row=1, column=1, padx=5)
         decade_combobox.bind("<<ComboboxSelected>>", self.handle_decade_selection)
