@@ -205,11 +205,19 @@ class QuizStartScreen(ttk.Frame):
         self.theme_var = tk.StringVar(value=config.BOOTSTRAP_THEME)
         self.previous_theme = config.BOOTSTRAP_THEME
 
-        # seleção de Gêneros
+        # Seleção de Gêneros
         ttk.Label(self, text="Gêneros").pack(pady=(20, 5))
         theme_combobox = ttk.Combobox(self, values=GENRES, textvariable=self.theme_var, state="readonly")
         theme_combobox.pack()
-        theme_combobox.bind("<<ComboboxSelected>>", self.previous_theme)
+        theme_combobox.bind("<<ComboboxSelected>>", self.handle_genre_selection)
+
+        # Seleção de Décadas
+        ttk.Label(self, text="Décadas").pack(pady=(20, 5))
+        self.decade_var = tk.StringVar()
+        decades = [str(year) for year in range(1900, 2030, 10)]  # Gera décadas de 1900 a 2020
+        decade_combobox = ttk.Combobox(self, values=decades, textvariable=self.decade_var,    state="readonly")
+        decade_combobox.pack()
+        decade_combobox.bind("<<ComboboxSelected>>", self.handle_decade_selection)
 
         ttk.Label(self, text="DashMovies", font=("Arial", 36)).pack(pady=40)
         ttk.Button(
@@ -225,10 +233,16 @@ class QuizStartScreen(ttk.Frame):
         self.controller.show_frame("QuizScreen")  # exibe a tela do quiz
 
     def handle_genre_selection(self, event):
-        selected_genre = self.selected_genre.get()
+        selected_genre = self.theme_var.get()
         print(f"Gênero selecionado: {selected_genre}")
-        self.search_movies_by_genre(selected_genre)
+        filtered_movies = self.search_movies_by_genre(selected_genre)
+        if filtered_movies is not None:
+            # Aqui você pode passar os filmes filtrados para o quiz ou armazená-los
+            self.controller.filtered_movies = filtered_movies
+        else:
+            print("Nenhum filme foi encontrado ou ocorreu um erro.")
 
+    #filtro por gênero
     def search_movies_by_genre(self, genre):
         try:
             # Carregando o dataset 
@@ -247,3 +261,44 @@ class QuizStartScreen(ttk.Frame):
                 print("Erro: O arquivo do dataset não foi encontrado.")
         except Exception as e:
                 print(f"Ocorreu um erro ao buscar filmes: {e}")
+
+    # seleção de Décadas
+    def handle_decade_selection(self, event):
+        selected_decade = self.decade_var.get()
+        print(f"Década selecionada: {selected_decade}")
+        filtered_movies = self.search_movies_by_decade(selected_decade)
+        if filtered_movies is not None:
+            # Aqui você pode passar os filmes filtrados para o quiz ou armazená-los
+            self.controller.filtered_movies = filtered_movies
+        else:
+            print("Nenhum filme foi encontrado ou ocorreu um erro.")
+
+    #filtro por década
+    def search_movies_by_decade(self, decade):
+        try:
+            # Carregando o dataset
+            movies_df = pd.read_csv("DataSet/world_imdb_movies_top_movies_per_year.csv")
+
+            # Converte a coluna de ano para inteiro (caso não esteja)
+            movies_df['year'] = pd.to_numeric(movies_df['year'], errors='coerce')
+
+            # Calcula o intervalo da década
+            start_year = int(decade)
+            end_year = start_year + 9
+
+            # Filtra os filmes pela década selecionada
+            filtered_movies_by_decade = movies_df[(movies_df['year'] >= start_year) & (movies_df['year'] <= end_year)]
+
+            if not filtered_movies_by_decade.empty:
+                print(f"Filmes encontrados para a década de {decade}:")
+                print(filtered_movies_by_decade[['title', 'year']])  # Exibe título e ano
+                return filtered_movies_by_decade  # Retorna os filmes filtrados
+            else:
+                print(f"Nenhum filme encontrado para a década de {decade}.")
+                return None
+        except FileNotFoundError:
+            print("Erro: O arquivo do dataset não foi encontrado.")
+            return None
+        except Exception as e:
+            print(f"Ocorreu um erro ao buscar filmes: {e}")
+            return None
