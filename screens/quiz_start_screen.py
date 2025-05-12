@@ -195,6 +195,7 @@ GENRES = ['Erotic Thriller'
 , 'Game Show'
 , 'Josei'
 , 'Soap Opera']
+
 class QuizStartScreen(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -210,7 +211,7 @@ class QuizStartScreen(ttk.Frame):
         ttk.Label(combobox_frame, text="Gêneros").grid(row=0, column=0, padx=5)
         genre_combobox = ttk.Combobox(combobox_frame, values=GENRES, textvariable=self.genre_var, state="readonly")
         genre_combobox.grid(row=1, column=0, padx=5)
-        genre_combobox.bind("<<ComboboxSelected>>", self.handle_genre_selection)
+        genre_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
 
         # Seleção de Décadas
         ttk.Label(combobox_frame, text="Décadas").grid(row=0, column=1, padx=5)
@@ -218,7 +219,7 @@ class QuizStartScreen(ttk.Frame):
         decades = [str(year) for year in range(1960, 2024, 10)]  # Gera décadas de 1900 a 2020
         decade_combobox = ttk.Combobox(combobox_frame, values=decades, textvariable=self.decade_var, state="readonly")
         decade_combobox.grid(row=1, column=1, padx=5)
-        decade_combobox.bind("<<ComboboxSelected>>", self.handle_decade_selection)
+        decade_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
 
         ttk.Button(
             self,
@@ -233,73 +234,39 @@ class QuizStartScreen(ttk.Frame):
         quiz_screen.start_quiz()  # inicializa o quiz (perguntas, timer, etc)
         self.controller.show_frame("QuizScreen")  # exibe a tela do quiz
 
-    def handle_genre_selection(self, event):
-        selected_genre = self.genre_var.get()
-        print(f"Gênero selecionado: {selected_genre}")
-        filtered_movies = self.search_movies_by_genre(selected_genre)
+    def handle_filter_selection(self, event):
+        # Busca filmes com base nos filtros atuais
+        filtered_movies = self.search_movies_filters()
         if filtered_movies is not None:
-            # Aqui você pode passar os filmes filtrados para o quiz ou armazená-los
             self.controller.filtered_movies = filtered_movies
-        else:
-            print("Nenhum filme foi encontrado ou ocorreu um erro.")
 
-    #filtro por gênero
-    def search_movies_by_genre(self, genre):
+    def search_movies_filters(self):
         try:
-            # Carregando o dataset 
             movies_df = pd.read_csv("DataSet/world_imdb_movies_top_movies_per_year.csv")
-    
-            # Filtra os filmes pelo gênero selecionado
-            filtered_movies = movies_df[movies_df['genre'].str.contains(genre, na=False, case=False)]
-    
+            filtered_movies = movies_df.copy()
+            
+            # Aplica filtro de gênero se selecionado
+            selected_genre = self.genre_var.get()
+            if selected_genre and selected_genre != "":
+                filtered_movies = filtered_movies[filtered_movies['genre'].str.contains(selected_genre, na=False, case=False)]
+            
+            # Aplica filtro de década se selecionado
+            selected_decade = self.decade_var.get()
+            if selected_decade and selected_decade != "":
+                start_year = int(selected_decade)
+                end_year = start_year + 9
+                filtered_movies['year'] = pd.to_numeric(filtered_movies['year'], errors='coerce')
+                filtered_movies = filtered_movies[(filtered_movies['year'] >= start_year) & 
+                                                (filtered_movies['year'] <= end_year)]
+            
             if not filtered_movies.empty:
-                print(f"Filmes encontrados para o gênero '{genre}':")
-                print(filtered_movies[['title', 'genre']])  # Exibe título e gênero os filmes encontrados  
+                print(f"Filmes encontrados com os filtros aplicados:")
+                print(filtered_movies[['title', 'genre', 'year']])
                 return filtered_movies
             else:
-                print(f"Nenhum filme encontrado para o gênero '{genre}'.")
-        except FileNotFoundError:
-                print("Erro: O arquivo do dataset não foi encontrado.")
-        except Exception as e:
-                print(f"Ocorreu um erro ao buscar filmes: {e}")
-
-    # seleção de Décadas
-    def handle_decade_selection(self, event):
-        selected_decade = self.decade_var.get()
-        print(f"Década selecionada: {selected_decade}")
-        filtered_movies = self.search_movies_by_decade(selected_decade)
-        if filtered_movies is not None:
-            # Aqui você pode passar os filmes filtrados para o quiz ou armazená-los
-            self.controller.filtered_movies = filtered_movies
-        else:
-            print("Nenhum filme foi encontrado ou ocorreu um erro.")
-
-    #filtro por década
-    def search_movies_by_decade(self, decade):
-        try:
-            # Carregando o dataset
-            movies_df = pd.read_csv("DataSet/world_imdb_movies_top_movies_per_year.csv")
-
-            # Converte a coluna de ano para inteiro (caso não esteja)
-            movies_df['year'] = pd.to_numeric(movies_df['year'], errors='coerce')
-
-            # Calcula o intervalo da década
-            start_year = int(decade)
-            end_year = start_year + 9
-
-            # Filtra os filmes pela década selecionada
-            filtered_movies_by_decade = movies_df[(movies_df['year'] >= start_year) & (movies_df['year'] <= end_year)]
-
-            if not filtered_movies_by_decade.empty:
-                print(f"Filmes encontrados para a década de {decade}:")
-                print(filtered_movies_by_decade[['title', 'year']])  # Exibe título e ano
-                return filtered_movies_by_decade  # Retorna os filmes filtrados
-            else:
-                print(f"Nenhum filme encontrado para a década de {decade}.")
+                print("Nenhum filme encontrado com os filtros aplicados.")
                 return None
-        except FileNotFoundError:
-            print("Erro: O arquivo do dataset não foi encontrado.")
-            return None
+                
         except Exception as e:
             print(f"Ocorreu um erro ao buscar filmes: {e}")
             return None
