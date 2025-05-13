@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style, Meter
 import config
-from data.questions import QUESTIONS
 
 class QuizScreen(ttk.Frame):
     def __init__(self, parent, controller):
@@ -21,7 +20,8 @@ class QuizScreen(ttk.Frame):
             self.call_id = None
         self.controller.show_frame('InitialScreen')
 
-    def start_quiz(self):
+    def start_quiz(self, QUESTIONS):
+        self.QUESTIONS = QUESTIONS
         """
         Inicializa ou reinicia o quiz: zera o placar e exibe a primeira pergunta.
         """
@@ -78,7 +78,7 @@ class QuizScreen(ttk.Frame):
         self.call_id = self.after(1000, self._update_timer)
 
         # Carrega pergunta atual
-        q = QUESTIONS[self.current_question]
+        q = self.QUESTIONS[self.current_question]
         ttk.Label(
             self.quiz_frame,
             text=q['question'],
@@ -127,7 +127,7 @@ class QuizScreen(ttk.Frame):
             self.after_cancel(self.call_id)
             self.call_id = None
 
-        q = QUESTIONS[self.current_question]
+        q = self.QUESTIONS[self.current_question]
         choice = self.selected_option.get()
 
         if choice == -1:
@@ -160,7 +160,7 @@ class QuizScreen(ttk.Frame):
     def _next_question(self):
         """Mostra a próxima pergunta ou resumo final."""
         self.current_question += 1
-        if self.current_question < len(QUESTIONS):
+        if self.current_question < len(self.QUESTIONS):
             self._show_question()
         else:
             self._show_summary()
@@ -178,7 +178,7 @@ class QuizScreen(ttk.Frame):
         ).pack(pady=20)
         ttk.Label(
             self.quiz_frame,
-            text=f'Total: {len(QUESTIONS)}   Pontuação: {self.score}',
+            text=f'Total: {len(self.QUESTIONS)}   Pontuação: {self.score}',
             font=('Arial', 28)
         ).pack(pady=5)
         ttk.Label(
