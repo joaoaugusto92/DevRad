@@ -9,5 +9,5 @@ BOOTSTRAP_THEME = 'darkly'
 PREVIOUS_THEME = BOOTSTRAP_THEME
 
 # resolução inicial do aplicativo
-APP_WIDTH = 800
-APP_HEIGHT = 600
+APP_WIDTH = 1280
+APP_HEIGHT = 720
