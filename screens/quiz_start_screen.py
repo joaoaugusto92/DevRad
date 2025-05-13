@@ -1,200 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
+from services.moviesService import get_distinct_genres
+from data.questions import get_questions
 
-
-GENRES = ['Erotic Thriller'
-, 'Giallo'
-, 'Slasher Horror'
-, 'Horror'
-, 'Mystery'
-, 'Thriller'
-, 'Parody'
-, 'Slapstick'
-, 'Comedy'
-, 'Drama'
-, 'Romance'
-, 'Satire'
-, 'Sketch Comedy'
-, 'Action'
-, 'Adventure'
-, 'Crime'
-, 'Family'
-, 'Biography'
-, 'Martial Arts'
-, 'Fantasy'
-, 'Psychological Drama'
-, 'HandDrawn Animation'
-, 'Quest'
-, 'Animation'
-, 'War'
-, 'Music'
-, 'Documentary'
-, 'Police Procedural'
-, 'Western'
-, 'Classical Western'
-, 'Musical'
-, 'Romantic Comedy'
-, 'Fairy Tale'
-, 'Stop Motion Animation'
-, 'History'
-, 'SciFi'
-, 'History Documentary'
-, 'Globetrotting Adventure'
-, 'Superhero'
-, 'Psychological Thriller'
-, 'Suspense Mystery'
-, 'Zombie Horror'
-, 'Anime'
-, 'Holiday Romance'
-, 'Holiday'
-, 'nan'
-, 'Dark Fantasy'
-, 'Vampire Horror'
-, 'Disaster'
-, 'Tragedy'
-, 'Dark Comedy'
-, 'Adult Animation'
-, 'Mecha'
-, 'Action Epic'
-, 'Adventure Epic'
-, 'Fantasy Epic'
-, 'SciFi Epic'
-, 'Space SciFi'
-, 'Drug Crime'
-, 'Buddy Comedy'
-, 'Computer Animation'
-, 'Farce'
-, 'HighConcept Comedy'
-, 'Urban Adventure'
-, 'Teen Horror'
-, 'Conspiracy Thriller'
-, 'Cyber Thriller'
-, 'Found Footage Horror'
-, 'Science  Technology Documentary'
-, 'Sea Adventure'
-, 'Swashbuckler'
-, 'Workplace Drama'
-, 'ComingofAge'
-, 'Teen Drama'
-, 'Nature Documentary'
-, 'Football'
-, 'Sports Documentary'
-, 'Sport'
-, 'Tragic Romance'
-, 'Folk Horror'
-, 'Car Action'
-, 'Road Trip'
-, 'Sword  Sorcery'
-, 'Pop Musical'
-, 'BHorror'
-, 'Prison Drama'
-, 'Spy'
-, 'Kung Fu'
-, 'OnePerson Army Action'
-, 'Wuxia'
-, 'Political Thriller'
-, 'Caper'
-, 'Supernatural Horror'
-, 'Witch Horror'
-, 'Contemporary Western'
-, 'Steamy Romance'
-, 'Psychological Horror'
-, 'Cop Drama'
-, 'FeelGood Romance'
-, 'StandUp'
-, 'Baseball'
-, 'Medical Drama'
-, 'Buddy Cop'
-, 'Heist'
-, 'Period Drama'
-, 'Animal Adventure'
-, 'Raunchy Comedy'
-, 'War Epic'
-, 'Docudrama'
-, 'Basketball'
-, 'True Crime'
-, 'Screwball Comedy'
-, 'Samurai'
-, 'Quirky Comedy'
-, 'Dark Romance'
-, 'Monster Horror'
-, 'Jungle Adventure'
-, 'Body Swap Comedy'
-, 'Showbiz Drama'
-, 'Supernatural Fantasy'
-, 'Teen Comedy'
-, 'Artificial Intelligence'
-, 'Dystopian SciFi'
-, 'News'
-, 'Teen Romance'
-, 'Legal Drama'
-, 'Legal Thriller'
-, 'Teen Adventure'
-, 'Music Documentary'
-, 'Body Horror'
-, 'Alien Invasion'
-, 'Survival'
-, 'Whodunnit'
-, 'Boxing'
-, 'Political Drama'
-, 'Costume Drama'
-, 'Concert'
-, 'Financial Drama'
-, 'Extreme Sport'
-, 'Dinosaur Adventure'
-, 'Time Travel'
-, 'Food Documentary'
-, 'Epic'
-, 'Romantic Epic'
-, 'Kaiju'
-, 'Spaghetti Western'
-, 'Werewolf Horror'
-, 'Desert Adventure'
-, 'Gangster'
-, 'Mockumentary'
-, 'Steampunk'
-, 'Sword  Sandal'
-, 'Bumbling Detective'
-, 'Holiday Animation'
-, 'Holiday Comedy'
-, 'Holiday Family'
-, 'Jukebox Musical'
-, 'BAction'
-, 'Cyberpunk'
-, 'Military Documentary'
-, 'Teen Fantasy'
-, 'Historical Epic'
-, 'Soccer'
-, 'Mountain Adventure'
-, 'Shjo'
-, 'Seinen'
-, 'Shnen'
-, 'Faith  Spirituality Documentary'
-, 'Travel Documentary'
-, 'Serial Killer'
-, 'Gun Fu'
-, 'Stoner Comedy'
-, 'Western Epic'
-, 'Water Sport'
-, 'Motorsport'
-, 'Isekai'
-, 'Crime Documentary'
-, 'Cozy Mystery'
-, 'Hardboiled Detective'
-, 'Iyashikei'
-, 'Political Documentary'
-, 'Rock Musical'
-, 'Sitcom'
-, 'Splatter Horror'
-, 'Classic Musical'
-, 'Korean Drama'
-, 'Slice of Life'
-, 'Talk Show'
-, 'Reality TV'
-, 'Game Show'
-, 'Josei'
-, 'Soap Opera']
+GENRES = get_distinct_genres()
 
 class QuizStartScreen(ttk.Frame):
     def __init__(self, parent, controller):
@@ -203,7 +13,7 @@ class QuizStartScreen(ttk.Frame):
         self.controller = controller
         self.genre_var = tk.StringVar()
 
-        # Container for Comboboxes
+        # Container para Comboboxes
         combobox_frame = ttk.Frame(self)
         combobox_frame.pack(pady=(20, 5))
 
@@ -211,7 +21,7 @@ class QuizStartScreen(ttk.Frame):
         ttk.Label(combobox_frame, text="Gêneros").grid(row=0, column=0, padx=5)
         genre_combobox = ttk.Combobox(combobox_frame, values=GENRES, textvariable=self.genre_var, state="readonly")
         genre_combobox.grid(row=1, column=0, padx=5)
-        genre_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
+        # genre_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
 
         # Seleção de Décadas
         ttk.Label(combobox_frame, text="Décadas").grid(row=0, column=1, padx=5)
@@ -219,7 +29,7 @@ class QuizStartScreen(ttk.Frame):
         decades = [str(year) for year in range(1960, 2024, 10)]  # Gera décadas de 1900 a 2020
         decade_combobox = ttk.Combobox(combobox_frame, values=decades, textvariable=self.decade_var, state="readonly")
         decade_combobox.grid(row=1, column=1, padx=5)
-        decade_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
+        # decade_combobox.bind("<<ComboboxSelected>>", self.handle_filter_selection)
 
         ttk.Button(
             self,
@@ -230,43 +40,13 @@ class QuizStartScreen(ttk.Frame):
         ttk.Button(self, text="Voltar", command=lambda: controller.show_frame("InitialScreen")).pack(pady=10)
 
     def _go_to_quiz(self):
+        # Primeiro, busca e imprime os 15 melhores filmes filtrados
+        QUESTIONS = get_questions(
+            genre=self.genre_var.get() or None,
+            decade=self.decade_var.get() or None,
+            top_n=15
+        )
+        # Em seguida, inicia o quiz normalmente
         quiz_screen = self.controller.frames["QuizScreen"]
-        quiz_screen.start_quiz()  # inicializa o quiz (perguntas, timer, etc)
-        self.controller.show_frame("QuizScreen")  # exibe a tela do quiz
-
-    def handle_filter_selection(self, event):
-        # Busca filmes com base nos filtros atuais
-        filtered_movies = self.search_movies_filters()
-        if filtered_movies is not None:
-            self.controller.filtered_movies = filtered_movies
-
-    def search_movies_filters(self):
-        try:
-            movies_df = pd.read_csv("DataSet/world_imdb_movies_top_movies_per_year.csv")
-            filtered_movies = movies_df.copy()
-            
-            # Aplica filtro de gênero se selecionado
-            selected_genre = self.genre_var.get()
-            if selected_genre and selected_genre != "":
-                filtered_movies = filtered_movies[filtered_movies['genre'].str.contains(selected_genre, na=False, case=False)]
-            
-            # Aplica filtro de década se selecionado
-            selected_decade = self.decade_var.get()
-            if selected_decade and selected_decade != "":
-                start_year = int(selected_decade)
-                end_year = start_year + 9
-                filtered_movies['year'] = pd.to_numeric(filtered_movies['year'], errors='coerce')
-                filtered_movies = filtered_movies[(filtered_movies['year'] >= start_year) & 
-                                                (filtered_movies['year'] <= end_year)]
-            
-            if not filtered_movies.empty:
-                print(f"Filmes encontrados com os filtros aplicados:")
-                print(filtered_movies[['title', 'genre', 'year']])
-                return filtered_movies
-            else:
-                print("Nenhum filme encontrado com os filtros aplicados.")
-                return None
-                
-        except Exception as e:
-            print(f"Ocorreu um erro ao buscar filmes: {e}")
-            return None
+        quiz_screen.start_quiz(QUESTIONS)
+        self.controller.show_frame("QuizScreen")
