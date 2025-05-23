@@ -1,77 +1,104 @@
 # DevRad – DashMovies
 
-Uma aplicação desktop em Python/Tkinter estilizada com **ttkbootstrap**, que combina duas funcionalidades principais:
+Uma aplicação desktop em Python/Tkinter estilizada com **ttkbootstrap**, que combina funcionalidades de busca de filmes e quiz interativo.
 
-## Descrição
+---
 
-**DevRad – DashMovies** oferece ao usuário:
-
-1. **Busca de Filmes**
-
-   * Carrega um dataset CSV (`world_imdb_movies_top_movies_per_year.csv`).
-   * Permite pesquisar por palavras-chave no título (em inglês).
-   * Exibe resultados ordenados por bilheteria mundial, formatados em K, M, B.
-   * Interface responsiva com canvas rolável para navegação dos resultados.
-
-2. **Quiz sobre Filmes**
-
-   * Quiz de múltipla escolha com perguntas estáticas e futura geração dinâmica por década/gênero.
-   * Timer circular configurável (padrão 10 segundos) usando o componente `Meter` do ttkbootstrap.
-   * Feedback imediato (Correta, Incorreta, Não respondida) e resumo final com estatísticas (pontuação, acertos, erros, não respondidas).
-
-3. **Tela de Configurações**
-
-   * Ajuste de tempo por pergunta.
-   * Escolha de tema (vários temas ttkbootstrap).
-   * Definição de resolução da janela (padrões ou customizada).
-
-## Estrutura de Pastas
+## 🗂️ Estrutura de Pastas
 
 ```
 DevRad/
 ├── .git/
+├── .gitignore
+├── DataSet/
+│   └── world_imdb_movies_top_movies_per_year.csv  # Dados CSV externos (não versionados)
 ├── data/
-│   └── questions.py       # Perguntas estáticas do quiz
+│   └── questions.py       # Lógica de geração dinâmica de perguntas
 ├── screens/
 │   ├── initial_screen.py
 │   ├── movie_search_screen.py
 │   ├── quiz_settings_screen.py
 │   ├── quiz_start_screen.py
 │   └── quiz_screen.py
-├── .gitignore
-├── config.py              # Configurações globais de tema, tempo, resolução
-├── main.py                # Inicialização da aplicação e controle de telas
-└── requirements.txt       # Dependências do projeto
+├── services/
+│   └── moviesService.py   # Interfaces de busca e filtragem de filmes
+├── config.py              # Configurações globais (tema, tempo, resolução)
+├── Main.py                # Ponto de entrada da aplicação e controle de telas
+├── requirements.txt       # Dependências
+└── README.md              # Este arquivo (atualizado)
 ```
 
-## Funcionalidades Principais
+---
 
-* **Navegação entre telas**: Menu inicial, busca de filmes, quiz, configurações.
-* **Pesquisa de Filmes**: Campo de texto com placeholder, pesquisa via pandas, exibição rolável.
-* **Quiz Interativo**: Contagem regressiva visual, feedback de respostas, estatísticas finais.
-* **Configurações Dinâmicas**: Alteração de tema, tempo e resolução com preview e persistência.
+## 🔍 Funcionalidades Atuais
 
-## Instalação
+1. **Busca de Filmes**
 
-1. Instale as dependências:
+   * Carrega o CSV `world_imdb_movies_top_movies_per_year.csv` (coloque-o dentro da pasta `DataSet`).
+   * Filtros por palavra-chave no título (em inglês), gênero e década.
+   * Ordenação por bilheteria mundial e formatação em K/M/B.
+   * Exibição responsiva com canvas rolável e paginação.
+
+2. **Quiz Interativo**
+
+   * Tela de configuração de filtros (gênero e década).
+   * Geração dinâmica de 5 perguntas (`get_questions`), sorteando 5 filmes e criando opções de ano correto/incorreto.
+   * Timer visual com componente `Meter` do **ttkbootstrap**, configurável via `config.TIME_LIMIT`.
+   * Feedback imediato por resposta (Correta, Incorreta, Não respondida).
+   * Resumo final com estatísticas de pontuação, acertos, erros e não respondidas.
+
+3. **Configurações Dinâmicas**
+
+   * Ajuste de **temas** (mais de 16 temas disponíveis em **ttkbootstrap**).
+   * Definição de **tempo por pergunta** (em segundos).
+   * Ajuste de **resolução** da janela (predefinidas ou customizada).
+   * Alterações aplicadas em tempo real e mantidas durante a sessão.
+
+---
+
+## 🚀 Como Executar
+
+1. **Clone** este repositório:
+
+   ```bash
+   git clone <URL-do-repositório>
+   cd DevRad
+   ```
+
+2. **Crie** um ambiente virtual (recomendado):
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Linux/macOS
+   .venv\Scripts\activate     # Windows
+   ```
+
+3. **Instale** as dependências:
 
    ```bash
    pip install -r requirements.txt
    ```
-2. Execute a aplicação:
+
+4. **Garanta** que o arquivo CSV `world_imdb_movies_top_movies_per_year.csv` esteja em `DataSet/`.
+
+5. **Execute** o aplicativo:
 
    ```bash
-   python main.py
+   python Main.py
    ```
 
-## Uso
+---
 
-* **Busca de Filmes**: Digite trecho do título (inglês) e clique em “Pesquisar Filme”.
-* **Quiz**: Selecione “Quiz” no menu, configure tempo/tema se desejar, inicie o quiz.
-* **Configurações**: Ajuste tempo por pergunta, tema e resolução; salve para aplicar.
+## 🛠️ Configurações (config.py)
 
-## Próximos Passos / Roadmap
+* `TIME_LIMIT`: segundos para cada pergunta (padrão: 10).
+* `BOOTSTRAP_THEME`: tema inicial do **ttkbootstrap** (padrão: `darkly`).
+* `APP_WIDTH`, `APP_HEIGHT`: resolução da janela.
 
-* **Persistência de Configurações**: Armazenar em arquivo JSON em vez de variáveis globais.
-* **Filtros Avançados na Busca**: Filtros por gênero e faixa de ano.
-* **Geração Dinâmica de Perguntas**: Quiz baseado em dados reais do CSV (décadas, gêneros).
+Todas as configurações podem ser ajustadas em tempo real na tela de "Configurações".
+
+---
+
+## 📈 Próximos Passos / Roadmap
+
+* **Persistência de Configurações**: salvar configurações do usuário em JSON para recarregar na próxima sessão.
