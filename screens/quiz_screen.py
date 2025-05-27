@@ -2,16 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 from ttkbootstrap import Style, Meter
 import config
+from ui.widgets import StyledButton, StyledLabel
 
 class QuizScreen(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-
-        # use o style criado no app principal
         self.style = controller.style
-        self.style.configure('TButton', font=('Arial', 16))
         self.call_id = None
+        self.configure(style='Quiz.TFrame')
 
     def _exit_quiz(self):
         """Encerra o quiz imediatamente e volta ao menu principal."""
@@ -49,20 +48,21 @@ class QuizScreen(ttk.Frame):
             w.destroy()
 
         # Botão de sair do quiz a qualquer momento
-        exit_btn = ttk.Button(
+        exit_btn = StyledButton(
             self.quiz_frame,
             text='Sair',
             command=self._exit_quiz,
-            style='TButton'
+            bootstyle='danger',
         )
-        exit_btn.pack(anchor='ne', padx=10, pady=5)
+        exit_btn.pack(anchor='ne', padx=config.PADDING_DEFAULT, pady=config.PADDING_DEFAULT)
 
         # Exibe placar
-        ttk.Label(
+        StyledLabel(
             self.quiz_frame,
             text=f'Pontuação: {self.score}',
-            font=('Arial', 28)
-        ).pack(anchor='nw', padx=10, pady=10)
+            font=(config.FONT_FAMILY, config.FONT_SIZE_SUBTITLE),
+            foreground=config.COLOR_PRIMARY,
+        ).pack(anchor='nw', padx=config.PADDING_DEFAULT, pady=config.PADDING_DEFAULT)
 
         # Timer circular
         self.time_elapsed = 0
@@ -73,26 +73,24 @@ class QuizScreen(ttk.Frame):
             metersize=100,
             bootstyle='info'
         )
-        self.timer.pack(anchor='ne', padx=10, pady=10)
+        self.timer.pack(anchor='ne', padx=config.PADDING_DEFAULT, pady=config.PADDING_DEFAULT)
         # Inicia contagem
         self.call_id = self.after(1000, self._update_timer)
 
         # Carrega pergunta atual
         q = self.QUESTIONS[self.current_question]
-        ttk.Label(
+        StyledLabel(
             self.quiz_frame,
             text=q['question'],
             wraplength=600,
-            font=('Arial', 32)
-        ).pack(pady=20)
+            font=(config.FONT_FAMILY, config.FONT_SIZE_TITLE),
+            foreground=config.COLOR_PRIMARY,
+        ).pack(pady=config.PADDING_LARGE)
 
         # Opções de resposta
         self.selected_option = tk.IntVar(value=-1)
         self.options_frame = ttk.Frame(self.quiz_frame)
         self.options_frame.pack()
-
-        # Ajuste de estilo para radio buttons usando o Style do ttkbootstrap
-        self.style.configure('TRadiobutton', font=('Arial', 18))
 
         for idx, opt in enumerate(q['options']):
             ttk.Radiobutton(
@@ -101,15 +99,16 @@ class QuizScreen(ttk.Frame):
                 variable=self.selected_option,
                 value=idx,
                 style='TRadiobutton'
-            ).pack(anchor='w', padx=20, pady=5)
+            ).pack(anchor='w', padx=config.PADDING_LARGE, pady=config.PADDING_DEFAULT)
 
         # Botão de enviar
-        self.submit_btn = ttk.Button(
+        self.submit_btn = StyledButton(
             self.quiz_frame,
             text='Enviar',
-            command=self._submit_answer
+            command=self._submit_answer,
+            bootstyle='primary',
         )
-        self.submit_btn.pack(pady=20)
+        self.submit_btn.pack(pady=config.PADDING_LARGE)
 
     def _update_timer(self):
         """Atualiza o medidor de tempo a cada segundo."""
@@ -132,21 +131,22 @@ class QuizScreen(ttk.Frame):
 
         if choice == -1:
             self.unattempted += 1
-            result_text, result_style = 'Não respondida', 'warning.TLabel'
+            result_text, result_style, color = 'Não respondida', 'warning.TLabel', config.COLOR_WARNING
         elif choice == q['answer']:
             self.correct += 1
             self.score += 10
-            result_text, result_style = 'Correta', 'success.TLabel'
+            result_text, result_style, color = 'Correta', 'success.TLabel', config.COLOR_SUCCESS
         else:
             self.incorrect += 1
-            result_text, result_style = 'Incorreta', 'danger.TLabel'
+            result_text, result_style, color = 'Incorreta', 'danger.TLabel', config.COLOR_DANGER
 
         # Feedback na tela
-        ttk.Label(
+        StyledLabel(
             self.quiz_frame,
             text=result_text,
             style=result_style,
-            font=('Arial', 32)
+            font=(config.FONT_FAMILY, config.FONT_SIZE_TITLE),
+            foreground=color,
         ).pack()
 
         # Desabilita interações
@@ -170,46 +170,50 @@ class QuizScreen(ttk.Frame):
         # Limpa tela
         for w in self.quiz_frame.winfo_children():
             w.destroy()
-
-        ttk.Label(
+        StyledLabel(
             self.quiz_frame,
             text='Resumo do Quiz',
-            font=('Arial', 40)
-        ).pack(pady=20)
-        ttk.Label(
+            font=(config.FONT_FAMILY, 40),
+            foreground=config.COLOR_PRIMARY,
+        ).pack(pady=config.PADDING_LARGE)
+        StyledLabel(
             self.quiz_frame,
             text=f'Total: {len(self.QUESTIONS)}   Pontuação: {self.score}',
-            font=('Arial', 28)
-        ).pack(pady=5)
-        ttk.Label(
+            font=(config.FONT_FAMILY, config.FONT_SIZE_SUBTITLE),
+            foreground=config.COLOR_PRIMARY,
+        ).pack(pady=config.PADDING_DEFAULT)
+        StyledLabel(
             self.quiz_frame,
             text=f'Corretas: {self.correct}',
             style='success.TLabel',
-            font=('Arial', 28)
-        ).pack(pady=5)
-        ttk.Label(
+            font=(config.FONT_FAMILY, config.FONT_SIZE_SUBTITLE),
+            foreground=config.COLOR_SUCCESS,
+        ).pack(pady=config.PADDING_DEFAULT)
+        StyledLabel(
             self.quiz_frame,
             text=f'Incorretas: {self.incorrect}',
             style='danger.TLabel',
-            font=('Arial', 28)
-        ).pack(pady=5)
-        ttk.Label(
+            font=(config.FONT_FAMILY, config.FONT_SIZE_SUBTITLE),
+            foreground=config.COLOR_DANGER,
+        ).pack(pady=config.PADDING_DEFAULT)
+        StyledLabel(
             self.quiz_frame,
             text=f'Não respondidas: {self.unattempted}',
             style='warning.TLabel',
-            font=('Arial', 28)
-        ).pack(pady=5)
-
-        # Botões de ação
+            font=(config.FONT_FAMILY, config.FONT_SIZE_SUBTITLE),
+            foreground=config.COLOR_WARNING,
+        ).pack(pady=config.PADDING_DEFAULT)
         btn_frame = ttk.Frame(self.quiz_frame)
-        btn_frame.pack(pady=20)
-        ttk.Button(
+        btn_frame.pack(pady=config.PADDING_LARGE)
+        StyledButton(
             btn_frame,
             text='Jogar Novamente',
-            command=self.start_quiz
-        ).pack(side='left', padx=20)
-        ttk.Button(
+            command=self.start_quiz,
+            bootstyle='primary',
+        ).pack(side='left', padx=config.PADDING_LARGE)
+        StyledButton(
             btn_frame,
             text='Voltar ao Menu',
-            command=lambda: self.controller.show_frame('InitialScreen')
-        ).pack(side='right', padx=20)
+            command=lambda: self.controller.show_frame('InitialScreen'),
+            bootstyle='secondary',
+        ).pack(side='right', padx=config.PADDING_LARGE)
