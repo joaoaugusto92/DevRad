@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from data.players_db import get_players, add_player, update_player, delete_player
+from data.players_db import (
+    get_players, add_player, update_player, delete_player,
+    search_players_by_id, search_players_by_name
+)
 
 class AdminPlayersScreen(ttk.Frame):
     def __init__(self, parent, controller):
@@ -10,6 +13,18 @@ class AdminPlayersScreen(ttk.Frame):
         self._refresh_tree()
 
     def _build_ui(self):
+        # Campo de busca
+        search_frame = ttk.Frame(self)
+        search_frame.pack(pady=5)
+        ttk.Label(search_frame, text="Buscar por ID:").pack(side="left")
+        self.search_id_var = tk.StringVar()
+        ttk.Entry(search_frame, textvariable=self.search_id_var, width=8).pack(side="left", padx=2)
+        ttk.Label(search_frame, text="ou Nome:").pack(side="left")
+        self.search_name_var = tk.StringVar()
+        ttk.Entry(search_frame, textvariable=self.search_name_var, width=15).pack(side="left", padx=2)
+        ttk.Button(search_frame, text="Buscar", command=self._search_player).pack(side="left", padx=5)
+        ttk.Button(search_frame, text="Limpar", command=self._refresh_tree).pack(side="left", padx=5)
+
         self.tree = ttk.Treeview(self, columns=("ID", "Nome", "Email"), show="headings")
         self.tree.heading("ID", text="ID")
         self.tree.heading("Nome", text="Nome")
@@ -27,6 +42,29 @@ class AdminPlayersScreen(ttk.Frame):
         for row in self.tree.get_children():
             self.tree.delete(row)
         for player in get_players():
+            self.tree.insert("", "end", values=player)
+        self.search_id_var.set("")
+        self.search_name_var.set("")
+
+    def _search_player(self):
+        id_val = self.search_id_var.get().strip()
+        name_val = self.search_name_var.get().strip()
+        results = []
+        if id_val:
+            try:
+                results = search_players_by_id(int(id_val))
+            except ValueError:
+                messagebox.showwarning("Atenção", "ID deve ser um número inteiro.")
+                return
+        elif name_val:
+            results = search_players_by_name(name_val)
+        else:
+            messagebox.showinfo("Busca", "Digite um ID ou Nome para buscar.")
+            return
+
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+        for player in results:
             self.tree.insert("", "end", values=player)
 
     def _add_player(self):
