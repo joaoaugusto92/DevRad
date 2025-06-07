@@ -6,6 +6,10 @@ class InitialScreen(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
 
+        # ...existing code...
+        ttk.Button(self, text="Admin Jogadores", command=lambda: controller.show_frame("AdminPlayersScreen")).pack(pady=10)
+       
+
         ttk.Label(self, text="Bem-vindo ao DashMovies", font=("Arial", 24)).pack(pady=20)
         ttk.Button(self, text="Busca de Filmes", command=lambda: controller.show_frame("MovieSearchScreen")).pack(pady=10)
         ttk.Button(self, text="Quiz",          command=lambda: controller.show_frame("QuizStartScreen")).pack(pady=10)
