@@ -9,9 +9,10 @@ class QuizScreen(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # use o style criado no app principal
+        # Usa o style criado no app principal
         self.style = controller.style
-        self.style.configure('TButton', font=('Arial', 16))
+        self.style.configure('TButton', font=('Arial', 18))
+        self.style.configure('TRadiobutton', font=('Arial', 18))
         self.call_id = None
 
     def _exit_quiz(self):
@@ -32,51 +33,64 @@ class QuizScreen(ttk.Frame):
             w.destroy()
 
         self.quiz_frame = ttk.Frame(self)
-        self.quiz_frame.pack(fill='both', expand=True)
+        self.quiz_frame.pack(fill='both', expand=True, padx=40, pady=30)
         self._show_question()
 
     def _show_question(self):
         for w in self.quiz_frame.winfo_children():
             w.destroy()
 
-        exit_btn = ttk.Button(
-            self.quiz_frame,
+        # Top bar: Sair e Pontuação
+        top_bar = ttk.Frame(self.quiz_frame)
+        top_bar.pack(fill='x', pady=(0, 10))
+        ttk.Button(
+            top_bar,
             text='Sair',
             command=self._exit_quiz,
-            style='TButton'
-        )
-        exit_btn.pack(anchor='ne', padx=10, pady=5)
-
+            style='danger.TButton',
+            width=10
+        ).pack(side='right', padx=10)
         ttk.Label(
-            self.quiz_frame,
+            top_bar,
             text=f'Pontuação: {self.score}',
-            font=('Arial', 28)
-        ).pack(anchor='nw', padx=10, pady=10)
+            font=('Arial', 22, 'bold'),
+            foreground='#0d6efd'
+        ).pack(side='left', padx=10)
 
+        # Timer circular centralizado
+        timer_frame = ttk.Frame(self.quiz_frame)
+        timer_frame.pack(pady=(0, 20))
         self.time_elapsed = 0
         self.timer = Meter(
-            self.quiz_frame,
+            timer_frame,
             amounttotal=config.TIME_LIMIT,
             amountused=0,
-            metersize=100,
-            bootstyle='info'
+            metersize=120,
+            bootstyle='info',
         )
-        self.timer.pack(anchor='ne', padx=10, pady=10)
+        self.timer.pack()
         self.call_id = self.after(1000, self._update_timer)
 
+        # Pergunta
         q = self.QUESTIONS[self.current_question]
         ttk.Label(
             self.quiz_frame,
+            text=f'Pergunta {self.current_question + 1} de {len(self.QUESTIONS)}',
+            font=('Arial', 18, 'italic'),
+            foreground='#6c757d'
+        ).pack(pady=(10, 0))
+        ttk.Label(
+            self.quiz_frame,
             text=q['question'],
-            wraplength=600,
-            font=('Arial', 32)
-        ).pack(pady=20)
+            wraplength=700,
+            font=('Arial', 30, 'bold'),
+            foreground="#FFFFFF"  # Cor branca para maior contraste
+        ).pack(pady=(10, 20))  # Reduzi o espaçamento inferior
 
+        # Opções de resposta
         self.selected_option = tk.IntVar(value=-1)
         self.options_frame = ttk.Frame(self.quiz_frame)
-        self.options_frame.pack()
-
-        self.style.configure('TRadiobutton', font=('Arial', 18))
+        self.options_frame.pack(pady=(0, 10))  # Menor espaçamento abaixo das opções
 
         for idx, opt in enumerate(q['options']):
             ttk.Radiobutton(
@@ -84,12 +98,16 @@ class QuizScreen(ttk.Frame):
                 text=opt,
                 variable=self.selected_option,
                 value=idx,
-                style='TRadiobutton'
-            ).pack(anchor='w', padx=20, pady=5)
+                style='info.TRadiobutton',
+                padding=10
+            ).pack(anchor='w', padx=30, pady=2)  # Reduzi o pady para 2
 
+        # Botão de enviar
         self.submit_btn = ttk.Button(
             self.quiz_frame,
             text='Enviar',
+            style='success.TButton',
+            width=18,
             command=self._submit_answer
         )
         self.submit_btn.pack(pady=20)
@@ -112,27 +130,31 @@ class QuizScreen(ttk.Frame):
 
         if choice == -1:
             self.unattempted += 1
-            result_text, result_style = 'Não respondida', 'warning.TLabel'
+            result_text, result_style, color = 'Não respondida', 'warning.TLabel', '#ffc107'
         elif choice == q['answer']:
             self.correct += 1
             self.score += 10
-            result_text, result_style = 'Correta', 'success.TLabel'
+            result_text, result_style, color = 'Correta!', 'success.TLabel', '#198754'
         else:
             self.incorrect += 1
-            result_text, result_style = 'Incorreta', 'danger.TLabel'
+            result_text, result_style, color = 'Incorreta!', 'danger.TLabel', '#dc3545'
 
-        ttk.Label(
-            self.quiz_frame,
-            text=result_text,
-            style=result_style,
-            font=('Arial', 32)
-        ).pack()
+        # Feedback visual grande e colorido
+        feedback = ttk.Label(
+        self.quiz_frame,
+        text=result_text,
+        style=result_style,
+        font=('Arial', 28, 'bold'),
+        foreground=color,
+        anchor='center',
+        justify='center'
+    ).pack(pady=10, fill="x", expand=True)
 
         for child in self.options_frame.winfo_children():
             child.configure(state='disabled')
         self.submit_btn.configure(state='disabled')
 
-        self.after(2000, self._next_question)
+        self.after(1800, self._next_question)
 
     def _next_question(self):
         self.current_question += 1

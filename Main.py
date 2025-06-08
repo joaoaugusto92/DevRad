@@ -15,14 +15,11 @@ from screens.quiz_start_screen import QuizStartScreen
 from screens.quiz_screen import QuizScreen
 from screens.admin_players_screen import AdminPlayersScreen
 
-
 class QuizApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("DashMovies")
-        self.geometry(f"{config.APP_WIDTH}x{config.APP_HEIGHT}")
-
-
+        self.geometry("800x500")
 
         # cria o Style uma única vez, usando o tema do config
         self.style = Style(config.BOOTSTRAP_THEME)

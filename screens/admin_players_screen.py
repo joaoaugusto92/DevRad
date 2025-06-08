@@ -23,7 +23,6 @@ class AdminPlayersScreen(ttk.Frame):
         else:
             self.info_label.config(text="Admin não identificado")
 
-    
     def _build_ui(self):
         # Campo de busca
         search_frame = ttk.Frame(self)
