@@ -4,14 +4,26 @@ from data.players_db import (
     get_players, add_player, update_player, delete_player,
     search_players_by_id, search_players_by_name
 )
+from data.players_db import add_player
+add_player("Administrador", "admin@email.com", "senha123", is_admin=1)
 
 class AdminPlayersScreen(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.info_label = ttk.Label(self, font=("Arial", 14, "bold"))
+        self.info_label.pack(pady=10)
         self._build_ui()
         self._refresh_tree()
 
+    def on_show(self):
+        admin_info = getattr(self.controller, "current_user", None)
+        if admin_info:
+            self.info_label.config(text=f"Admin: {admin_info[1]} (ID: {admin_info[0]})")
+        else:
+            self.info_label.config(text="Admin não identificado")
+
+    
     def _build_ui(self):
         # Campo de busca
         search_frame = ttk.Frame(self)
@@ -96,11 +108,18 @@ class AdminPlayersScreen(ttk.Frame):
         ttk.Entry(top, textvariable=nome_var).pack()
         ttk.Label(top, text="Email:").pack()
         ttk.Entry(top, textvariable=email_var).pack()
+
         def save():
+            if not nome_var.get() or not email_var.get():
+                messagebox.showwarning("Campos obrigatórios", "Preencha nome e email.")
+                return
             if player_id is None:
-                add_player(nome_var.get(), email_var.get())
+                add_player(nome_var.get(), email_var.get(), "senha_padrao")
             else:
                 update_player(player_id, nome_var.get(), email_var.get())
             self._refresh_tree()
             top.destroy()
+
         ttk.Button(top, text="Salvar", command=save).pack(pady=5)
+        
+   

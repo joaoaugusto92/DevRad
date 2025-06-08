@@ -6,6 +6,8 @@ from data.players_db import init_db
 # Inicializa o banco de dados ANTES de importar as telas
 init_db()
 
+from screens.login_screen import LoginScreen
+from screens.ranking_screen import RankingScreen
 from screens.initial_screen import InitialScreen
 from screens.movie_search_screen import MovieSearchScreen
 from screens.quiz_settings_screen import QuizSettingsScreen
@@ -31,12 +33,14 @@ class QuizApp(tk.Tk):
 
         self.frames = {}
         for F in (
+            LoginScreen,
             InitialScreen,
             MovieSearchScreen,
             QuizSettingsScreen,
             QuizStartScreen,
             QuizScreen,
-            AdminPlayersScreen  # Agora está por último
+            RankingScreen,
+            AdminPlayersScreen
         ):
             frame = F(parent=container, controller=self)
             self.frames[F.__name__] = frame
@@ -46,6 +50,9 @@ class QuizApp(tk.Tk):
 
     def show_frame(self, name: str):
         frame = self.frames[name]
+        # Chama on_show se existir
+        if hasattr(frame, "on_show"):
+            frame.on_show()
         frame.tkraise()
 
 if __name__ == "__main__":
