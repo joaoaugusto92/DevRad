@@ -210,7 +210,7 @@ class QuizScreen(ttk.Frame):
         btn_frame = ttk.Frame(self.quiz_frame)
         btn_frame.pack(pady=20)
         ttk.Button(btn_frame, text='Jogar Novamente', style="success.TButton", width=20,
-                   command=lambda: self.start_quiz(self.QUESTIONS)).pack(side='left', padx=20)
+                   command=lambda: self.controller.show_frame('QuizStartScreen')).pack(side='left', padx=20)
         ttk.Button(btn_frame, text='Voltar ao Menu', style="secondary.TButton", width=20,
                    command=lambda: self.controller.show_frame('InitialScreen')).pack(side='right', padx=20)
 
