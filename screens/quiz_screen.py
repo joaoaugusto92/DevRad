@@ -82,7 +82,7 @@ class QuizScreen(ttk.Frame):
         ttk.Label(
             self.quiz_frame,
             text=q['question'],
-            wraplength=700,
+            wraplength=config.APP_WIDTH,
             font=('Arial', 30, 'bold'),
             foreground="#FFFFFF"  # Cor branca para maior contraste
         ).pack(pady=(10, 20))  # Reduzi o espaçamento inferior
@@ -148,7 +148,7 @@ class QuizScreen(ttk.Frame):
         foreground=color,
         anchor='center',
         justify='center'
-    ).pack(pady=10, fill="x", expand=True)
+    ).pack(pady=0, fill="x", expand=True)
 
         for child in self.options_frame.winfo_children():
             child.configure(state='disabled')

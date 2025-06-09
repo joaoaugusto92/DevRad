@@ -13,22 +13,6 @@ class QuizStartScreen(ttk.Frame):
         self.genre_var = tk.StringVar()
         self.decade_var = tk.StringVar()
 
-        # Se não estiver logado, mostra botão de login
-        if not hasattr(controller, "current_user") or not controller.current_user:
-            # Só mostra o botão de login se NÃO estiver logado
-            ttk.Label(self, text="Faça login para guardar seus pontos e ver seu ranking.",
-                    font=("Arial", 12)).pack(pady=(0, 5))
-            ttk.Button(
-                self,
-                text="Fazer Login",
-                style="primary.TButton",
-                width=16,
-                command=self._abrir_login
-            ).pack(pady=(0, 15))
-        else:
-            # Mensagem de boas-vindas para usuário logado
-            ttk.Label(self, text=f"Bem-vindo, {controller.current_user[1]}!", font=("Arial", 12)).pack(pady=(0, 15))
-
         # Filtros de gênero e década (sempre visíveis)
         combobox_frame = ttk.Frame(self)
         combobox_frame.pack(pady=(20, 5))
@@ -56,9 +40,6 @@ class QuizStartScreen(ttk.Frame):
             style="secondary.TButton",
             command=lambda: controller.show_frame("InitialScreen")
         ).pack(pady=10)
-
-    def _abrir_login(self):
-        self.controller.show_frame("LoginScreen")
 
     def _go_to_quiz(self):
         QUESTIONS = get_questions(
