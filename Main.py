@@ -19,7 +19,7 @@ class QuizApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("DashMovies")
-        self.geometry("800x500")
+        self.geometry(f"{config.APP_WIDTH}x{config.APP_HEIGHT}")
 
         # cria o Style uma única vez, usando o tema do config
         self.style = Style(config.BOOTSTRAP_THEME)
