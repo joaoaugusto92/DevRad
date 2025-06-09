@@ -1,10 +1,10 @@
 # data/questions.py
+
 import pandas as pd
 from services.moviesService import search_movies
 import random
 
-QUESTIONS = [
-]
+QUESTIONS = []
 
 def get_questions(genre: str = None, decade: str = None, top_n: int = 15):
     """
@@ -23,10 +23,25 @@ def get_questions(genre: str = None, decade: str = None, top_n: int = 15):
         return f"{a:.0f}"
 
     topN = topN.sample(n=min(5, len(topN)))
-    
+
+    QUESTIONS.clear()  # Limpa perguntas antigas
+
+    # Descobre o intervalo da década
+    if decade is not None:
+        decade_start = int(decade)
+        decade_end = decade_start + 9
+    else:
+        decade_start = df['year'].min()
+        decade_end = df['year'].max()
+
     for _, row in topN.iterrows():
         correct_year = row['year']
-        wrong_years = pd.Series([correct_year + i for i in range(-3, 4) if i != 0]).sample(3).tolist()
+        # Gera alternativas só com anos da década escolhida
+        anos_decada = df[(df['year'] >= decade_start) & (df['year'] <= decade_end)]['year'].unique().tolist()
+        # Remove o ano correto para não duplicar
+        anos_decada = [ano for ano in anos_decada if ano != correct_year]
+        # Seleciona até 3 anos errados
+        wrong_years = random.sample(anos_decada, min(3, len(anos_decada)))
         options = [correct_year] + wrong_years
         random.shuffle(options)
         QUESTIONS.append({
