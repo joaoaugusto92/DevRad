@@ -52,7 +52,7 @@ def get_ranking():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     # Só pega usuários que NÃO são admin
-    c.execute("SELECT nome, pontuacao FROM players WHERE is_admin=0 ORDER BY pontuacao DESC LIMIT 10")
+    c.execute("SELECT nome, pontuacao FROM players ORDER BY pontuacao DESC LIMIT 10")
     ranking = c.fetchall()
     conn.close()
     return ranking
@@ -94,3 +94,11 @@ def search_players_by_name(name):
     result = c.fetchall()
     conn.close()
     return result
+
+def exists_admin():
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT 1 FROM players WHERE is_admin=1 LIMIT 1")
+    exists = c.fetchone() is not None
+    conn.close()
+    return exists

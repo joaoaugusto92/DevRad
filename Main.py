@@ -43,7 +43,7 @@ class QuizApp(tk.Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame("InitialScreen")
+        self.show_frame("LoginScreen")
 
     def show_frame(self, name: str):
         frame = self.frames[name]

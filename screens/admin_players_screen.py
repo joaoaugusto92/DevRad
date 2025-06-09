@@ -2,10 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from data.players_db import (
     get_players, add_player, update_player, delete_player,
-    search_players_by_id, search_players_by_name
+    search_players_by_id, search_players_by_name, exists_admin
 )
-from data.players_db import add_player
-add_player("Administrador", "admin@email.com", "senha123", is_admin=1)
 
 class AdminPlayersScreen(ttk.Frame):
     def __init__(self, parent, controller):
@@ -120,5 +118,7 @@ class AdminPlayersScreen(ttk.Frame):
             top.destroy()
 
         ttk.Button(top, text="Salvar", command=save).pack(pady=5)
-        
-   
+
+if not exists_admin():
+    add_player("Administrador", "admin@email.com", "senha123", is_admin=1)
+

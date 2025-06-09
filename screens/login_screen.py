@@ -24,10 +24,7 @@ class LoginScreen(ttk.Frame):
         user = authenticate_player(email, senha)
         if user:
             self.controller.current_user = user
-            if user[2]:  # is_admin == 1
-                self.controller.show_frame("AdminPlayersScreen")
-            else:
-                self.controller.show_frame("QuizStartScreen")
+            self.controller.show_frame("InitialScreen")
         else:
             messagebox.showerror("Erro", "Email ou senha inválidos.")
 
@@ -51,5 +48,5 @@ class LoginScreen(ttk.Frame):
             if user:
                 self.controller.current_user = user
             top.destroy()
-            self.controller.show_frame("QuizStartScreen")
+            self.controller.show_frame("InitialScreen")
         ttk.Button(top, text="Cadastrar", style="success.TButton", command=cadastrar).pack(pady=10)
